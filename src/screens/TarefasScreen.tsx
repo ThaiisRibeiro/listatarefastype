@@ -1,17 +1,23 @@
-import React from 'react'; // Importa a biblioteca React para criar componentes.
-import { View } from 'native-base'; // Importa o componente View da biblioteca native-base.
-import AdicionarTarefa from '../components/AdicionarTarefa'; // Importa o componente para adicionar tarefas.
-import ListaTarefas from '../components/ListaTarefas'; // Importa o componente que exibe a lista de tarefas.
+import React from 'react';
+import { Box, Text } from 'native-base'; // Importando Box e Text do NativeBase
+import AdicionarTarefa from '../components/AdicionarTarefa'; // Importa o componente para adicionar tarefas
+import ListaTarefas from '../components/ListaTarefas'; // Importa o componente que exibe a lista de tarefas
 
-const TarefasScreen: React.FC = () => { // Declara o componente TarefasScreen como um componente funcional.
+const TarefasScreen: React.FC = () => {
+  // Função para atualizar a lista de tarefas quando uma nova tarefa for adicionada
+  const atualizarListaDeTarefas = () => {
+    console.log("Lista de tarefas atualizada!");
+    // Aqui você pode adicionar a lógica para atualizar a lista de tarefas, se necessário
+  };
+
   return (
-    <View style={{ flex: 1, backgroundColor: '#402291' }}> {/* Define o estilo do container principal. */}
+    <Box style={{ flex: 1, backgroundColor: '#402291', padding: 20 }}>
       {/* Formulário de Adicionar Tarefa */}
-      <AdicionarTarefa /> {/* Renderiza o componente que permite adicionar novas tarefas. */}
+      <AdicionarTarefa onAdicionarTarefa={atualizarListaDeTarefas} /> {/* Passa a função como prop */}
       {/* Lista de Tarefas */}
-      <ListaTarefas /> {/* Renderiza o componente que exibe a lista de tarefas existentes. */}
-    </View>
+      <ListaTarefas /> {/* Renderiza o componente que exibe a lista de tarefas existentes */}
+    </Box>
   );
 };
 
-export default TarefasScreen; // Exporta o componente para que possa ser utilizado em outras partes da aplicação.
+export default TarefasScreen;
