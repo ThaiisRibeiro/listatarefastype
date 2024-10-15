@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import AsyncStorage from '@react-native-community/async-storage';
-
+//import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from "@react-native-async-storage/async-storage"; // Corrigido para o novo pacote
 // Interface que define a estrutura de uma tarefa
 interface Tarefa {
   id: number;

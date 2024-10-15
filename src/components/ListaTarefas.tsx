@@ -1,64 +1,129 @@
-// Importa o hook React useState
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { FlatList, Text, Box, Spinner, ScrollView, Toast } from 'native-base';
+import { useNavigation } from '@react-navigation/native';
+import TarefaItem from './TarefaItem';
+import AsyncStorage from "@react-native-async-storage/async-storage"; // Corrigido para o novo pacote
+import AdicionarTarefa from './AdicionarTarefa'; // Importar o componente AdicionarTarefa
 
-// Importa os componentes FlatList, Text, Box, e Input da biblioteca NativeBase
-import { FlatList, Text, Box, Input } from 'native-base';
-
-// Importa o hook useEstadoGlobal do arquivo ../hooks/EstadoGlobal.tsx
-import { useEstadoGlobal } from "../hooks/EstadoGlobal";
-
-// Interface que define os props do componente TarefaItem
-interface TarefaItemProps {
-  id: number; // Identificador único da tarefa
-  titulo: string; // Título da tarefa
+interface Tarefa {
+  id: number;
+  tarefa: string;
 }
 
-// Componente "TarefaItem" - Representa um item individual na lista de tarefas
-const TarefaItem: React.FC<TarefaItemProps> = ({ id, titulo }) => {
-
-  // **useState** - Define o estado local "editando" para controlar o modo de edição do item
-  // O estado inicial é "false" (modo de exibição)
-  const [editando, setEditando] = React.useState(false);
-
-  // **useState** - Define o estado local "novoTitulo" para armazenar o novo título durante a edição
-  // O estado inicial é o título original da tarefa ("titulo")
-  const [novoTitulo, setNovoTitulo] = React.useState(titulo);
-
-  // **Retorno** - Estrutura do componente "TarefaItem"
-  return (
-    <Box
-      flexDirection="row" // Layout em linha
-      justifyContent="space-between" // Alinhamento à direita
-      alignItems="center" // Alinhamento vertical
-      bg="gray.200" // Cor de fundo
-      p={4} // Padding interno
-      my={2} // Margem vertical
-      mx={2} // Margem horizontal
-      borderRadius={8} // Borda arredondada
-    >
-      {/* Modo de exibição */}
-      <Text flex={3} fontSize={18}>{titulo}</Text> {/* Exibe o título da tarefa */}
-    </Box>
-  );
-};
-
-// Componente "ListaTarefas" - Exibe a lista completa de tarefas
 const ListaTarefas: React.FC = () => {
+  const [tarefas, setTarefas] = useState<Tarefa[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const navigation = useNavigation<any>();
 
-  // **useEstadoGlobal** - Acessa o contexto global de estado e obtém a lista de tarefas "tarefas"
-  const { tarefas } = useEstadoGlobal();
+  const fetchTarefas = async () => {
+    try {
+      setLoading(true); // Inicia o loading quando recarrega
+      const token = await AsyncStorage.getItem('token');
+      if (!token) {
+        navigation.navigate('LoginScreen');
+        return;
+      }
 
-  // **Retorno** - Estrutura do componente "ListaTarefas"
+      const response = await fetch('http://localhost:3000/api/tarefas', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Erro ao buscar tarefas');
+      }
+
+      const data = await response.json();
+      setTarefas(data);
+    } catch (error) {
+      setError("Erro ao buscar tarefas");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchTarefas();
+  }, []);
+
+  const handleAdicionarTarefa = () => {
+    fetchTarefas(); // Atualiza a lista quando uma nova tarefa é adicionada
+  };
+
+  const handleDelete = async (id: number) => {
+    const token = await AsyncStorage.getItem('token');
+
+    if (!token) {
+      console.error('Token não encontrado!');
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://localhost:3000/api/tarefas/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        setTarefas(prevTarefas => prevTarefas.filter(tarefa => tarefa.id !== id));
+        Toast.show({
+          description: 'Tarefa excluída com sucesso!',
+          bgColor: "green.500"
+        });
+      } else {
+        const errorData = await response.json();
+        console.error('Erro ao excluir a tarefa:', errorData);
+        Toast.show({
+          description: 'Não foi possível excluir a tarefa. Tente novamente.',
+          bgColor: "red.500"
+        });
+      }
+    } catch (error) {
+      console.error('Erro na requisição:', error);
+      Toast.show({
+        description: 'Ocorreu um erro. Tente novamente.',
+        bgColor: "red.500"
+      });
+    }
+  };
+
+  if (loading) {
+    return <Spinner color="blue.500" />;
+  }
+
+  if (error) {
+    return (
+      <Box padding={4}>
+        <Text style={{ color: 'red' }}>{error}</Text>
+      </Box>
+    );
+  }
+
   return (
-    <FlatList
-      data={tarefas} // Lista de tarefas a serem renderizadas
-      renderItem={({ item }) => <TarefaItem id={item.id} titulo={item.titulo}  />} // Renderiza cada item da lista com TarefaItem
-      keyExtractor={(item) => item.id.toString()} // Chave única para cada item (ID da tarefa)
-      contentContainerStyle={{ flexGrow: 1 }} // Permite que a lista cresça para preencher o espaço disponível
-      style={{ width: '100%', backgroundColor: '#402291' }} // Largura da lista
-    />
+    <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+      {/* Adicionando o componente de adicionar tarefa */}
+      <AdicionarTarefa onAdicionarTarefa={handleAdicionarTarefa} />
+
+      <FlatList
+        data={tarefas}
+        renderItem={({ item }) => (
+          <TarefaItem
+            id={item.id}
+            titulo={item.tarefa}
+            onUpdate={() => { /* Lógica para atualizar tarefa */ }}
+            onDelete={handleDelete} // Passa a função de exclusão
+          />
+        )}
+        keyExtractor={(item) => item.id.toString()}
+        showsVerticalScrollIndicator={false}
+      />
+    </ScrollView>
   );
 };
 
-// Exporta o componente "ListaTarefas" para ser usado em outros arquivos
 export default ListaTarefas;
