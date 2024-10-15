@@ -11,7 +11,7 @@ const TarefasScreen: React.FC = () => {
   };
 
   return (
-    <Box style={{ flex: 1, backgroundColor: '#402291', padding: 20 }}>
+    <Box style={{ flex: 1, backgroundColor: '#6247AA', padding: 20 }}>
       {/* Formulário de Adicionar Tarefa */}
       <AdicionarTarefa onAdicionarTarefa={atualizarListaDeTarefas} /> {/* Passa a função como prop */}
       {/* Lista de Tarefas */}

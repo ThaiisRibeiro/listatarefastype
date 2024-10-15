@@ -32,7 +32,7 @@ const TarefaItem: React.FC<TarefaItemProps> = ({ id, titulo, onUpdate, onDelete 
       flexDirection="row"
       justifyContent="space-between"
       alignItems="center"
-      bg="gray.200"
+      bg="pink.200"
       p={4}
       my={2}
       mx={2}
@@ -74,7 +74,7 @@ const TarefaItem: React.FC<TarefaItemProps> = ({ id, titulo, onUpdate, onDelete 
           </Modal.Body>
           <Modal.Footer>
             <Button.Group>
-              <Button colorScheme="coolGray" onPress={() => setIsModalOpen(false)}>
+              <Button colorScheme="pink" onPress={() => setIsModalOpen(false)}>
                 Cancelar
               </Button>
               <Button colorScheme="danger" onPress={handleDelete}>

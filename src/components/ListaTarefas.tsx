@@ -73,33 +73,33 @@ const ListaTarefas: React.FC = () => {
         setTarefas(prevTarefas => prevTarefas.filter(tarefa => tarefa.id !== id));
         Toast.show({
           description: 'Tarefa excluída com sucesso!',
-          bgColor: "green.500"
+          bgColor: "pink.500"
         });
       } else {
         const errorData = await response.json();
         console.error('Erro ao excluir a tarefa:', errorData);
         Toast.show({
           description: 'Não foi possível excluir a tarefa. Tente novamente.',
-          bgColor: "red.500"
+          bgColor: "pink.500"
         });
       }
     } catch (error) {
       console.error('Erro na requisição:', error);
       Toast.show({
         description: 'Ocorreu um erro. Tente novamente.',
-        bgColor: "red.500"
+        bgColor: "pink.500"
       });
     }
   };
 
   if (loading) {
-    return <Spinner color="blue.500" />;
+    return <Spinner color="pink.500" />;
   }
 
   if (error) {
     return (
       <Box padding={4}>
-        <Text style={{ color: 'red' }}>{error}</Text>
+        <Text style={{ color: 'purple' }}>{error}</Text>
       </Box>
     );
   }

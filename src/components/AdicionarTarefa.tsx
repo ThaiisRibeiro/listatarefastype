@@ -48,17 +48,20 @@ const AdicionarTarefa: React.FC<AdicionarTarefaProps> = ({ onAdicionarTarefa }) 
   return (
     <View 
       style={{ 
-        backgroundColor: '#402291', 
+        backgroundColor: '#A06CD5', 
         paddingVertical: 20, 
         paddingHorizontal: 20, 
-        paddingTop: 50 
+        paddingTop: 50,
+        justifyContent: 'center', // Centraliza verticalmente
+        alignItems: 'center', // Centraliza horizontalmente
+        height: '100%' // Ocupa a altura total da tela para que o conteúdo fique centralizado
       }}
     >
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
         <View style={{ flex: 1, marginRight: 10 }}>
           <Input
             placeholder="Digite uma tarefa"
-            placeholderTextColor="white"
+            placeholderTextColor="pink"
             value={novaTarefa}
             onChangeText={setNovaTarefa}
             fontSize={18}
@@ -66,14 +69,15 @@ const AdicionarTarefa: React.FC<AdicionarTarefaProps> = ({ onAdicionarTarefa }) 
           />
         </View>
         <IconButton
-          icon={<Ionicons name="add" size={24} color="#402291" />}
+          icon={<Ionicons name="add" size={24} color="#A06CD5" />}
           colorScheme="light"
           onPress={handleAdicionarTarefa}
-          style={{ borderRadius: 50, backgroundColor: 'gold' }}
+          style={{ borderRadius: 50, backgroundColor: 'pink' }}
         />
       </View>
     </View>
   );
+  
 };
 
 export default AdicionarTarefa;
